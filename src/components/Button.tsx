@@ -6,7 +6,7 @@ interface Props {
     children?: React.ReactNode; 
     loading?: boolean;
     type: "button" | "submit" | "reset";
-    variant?: string;
+    variant?: 'default' | 'danger' | 'hollow' | 'positive' | 'warning';
     className?: string;
 }
 
@@ -24,7 +24,7 @@ export const Button: React.FC<Props> = ({ label, loading, className, onClick, ch
                 disabled = {loading}
                 type={type}
                 onClick={onClick}
-                className={`text-xs md:text-lg  min-h-[36px] px-2 py-2 ${variant ? variants[variant] : variants['default']} px-4 rounded-full transition duration-300 ${
+                className={`text-xs md:text-lg  min-h-[36px] px-2 py-2 ${variants[variant ?? 'default']} px-4 rounded-full transition duration-300 ${
                     loading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
             >

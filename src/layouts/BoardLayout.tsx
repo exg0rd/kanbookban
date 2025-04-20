@@ -57,7 +57,7 @@ export const BoardLayout: React.FC = () => {
 
   const moveBook = (id: string, newCategory: 'want-to-read' | 'reading' | 'read') => {
     updateBooks((prevBooks) =>
-      prevBooks.map((book) =>
+      prevBooks.map((book: { id: string; }) =>
         book.id === id ? { ...book, category: newCategory } : book
       )
     );
@@ -65,14 +65,14 @@ export const BoardLayout: React.FC = () => {
 
   const updatePagesRead = (id: string, newPagesRead: number) => {
     updateBooks((prevBooks) =>
-      prevBooks.map((book) =>
+      prevBooks.map((book: { id: string; }) =>
         book.id === id ? { ...book, pagesRead: newPagesRead } : book
       )
     );
   };
 
   const deleteBook = (id: string) => {
-    updateBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+    updateBooks((prevBooks) => prevBooks.filter((book: { id: string; }) => book.id !== id));
   };
 
   return (
@@ -82,8 +82,8 @@ export const BoardLayout: React.FC = () => {
         <div className="flex flex-col gap-4 p-4 bg-red-50 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-red-700">Хочу прочитать</h2>
           {books
-            .filter((book) => book.category === 'want-to-read')
-            .map((book) => (
+            .filter((book: { category: string; }) => book.category === 'want-to-read')
+            .map((book: { id: string; }) => (
               <div key={book.id}>
                 <Book
                   {...book}
@@ -155,10 +155,10 @@ export const BoardLayout: React.FC = () => {
         <div className="flex flex-col gap-4 p-4 bg-yellow-50 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-yellow-700">Читаю</h2>
           {books
-            .filter((book) => book.category === 'reading')
-            .map((book) => (
+            .filter((book: { category: string; }) => book.category === 'reading')
+            .map((book: { id: string; }) => (
               <div key={book.id}>
-                <Book
+            <Book
                   {...book}
                   onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
                   onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
@@ -171,15 +171,14 @@ export const BoardLayout: React.FC = () => {
         <div className="flex flex-col gap-4 p-4 bg-green-50 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-green-700">Прочитал</h2>
           {books
-            .filter((book) => book.category === 'read')
-            .map((book) => (
+            .filter((book: { category: string; }) => book.category === 'read')
+            .map((book: { id: string; }) => (
               <div key={book.id}>
                 <Book
-                  {...book}
-                  onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
-                  onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
-                  onDeleteBook={(id) => deleteBook(id)}
-                />
+                title={''} author={''} category={'want-to-read'} pagesTotal={0} pagesRead={0} {...book}
+                onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
+                onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
+                onDeleteBook={(id) => deleteBook(id)}                />
               </div>
             ))}
         </div>

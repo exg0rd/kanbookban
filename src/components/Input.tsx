@@ -1,4 +1,4 @@
-import React, { ChangeEvent, InputHTMLAttributes } from 'react';
+import React, { InputHTMLAttributes } from 'react';
 import { useId } from 'react';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
@@ -40,7 +40,7 @@ export const Input: React.FC<Props> = ({
         <div className={`${width || ''} flex flex-col`}>
            
                 <label htmlFor={id || randId} className={`text-md ${labelVariants[variant]}`}>
-                    {label?.length > 0 ? label : ''}
+                    {label && label.length > 0 ? label : ''}
                 </label>
         
             <div className='flex flex-row items-center gap-3'>

@@ -17,6 +17,9 @@ interface Props {
     onMoveBook: (id: string, newCategory: 'want-to-read' | 'reading' | 'read') => void;
     onDeleteBook: (id: string) => void;
     onUpdateBookCover: (id: string, newCoverPath: string) => void;
+    onUpdatePagesRead: (id: string, newPagesRead: number) => void; 
+    onMoveBook: (id: string, newCategory: 'want-to-read' | 'reading' | 'read') => void; 
+    onDeleteBook: (id: string) => void;
 }
 
 export const Book: React.FC<Props> = ({
