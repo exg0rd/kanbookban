@@ -70,11 +70,11 @@ kanbookban/
 
 3. **Запустите приложение в режиме разработки**:
    ```bash
-   npm start
+   npm run dev
    ```
    или
    ```bash
-   yarn start
+   yarn run dev
    ```
 
    После выполнения команды приложение будет доступно по адресу [http://localhost:5173](http://localhost:5173).
