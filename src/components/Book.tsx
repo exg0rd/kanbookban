@@ -13,6 +13,7 @@ interface Props {
     pagesRead: number;
     onUpdatePagesRead: (id: string, newPagesRead: number) => void; // Callback for updating pagesRead
     onMoveBook: (id: string, newCategory: 'want-to-read' | 'reading' | 'read') => void; // Callback for moving books
+    onDeleteBook: (id: string) => void;
 }
 
 export const Book: React.FC<Props> = ({
