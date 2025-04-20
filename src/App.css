@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+#root,
+body {
+  margin: 0 auto;
+  font-family: "Playfair Display", serif;
+  letter-spacing: 0.05em;
+  background-color: #f4f6f9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
