@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes } from 'react'; //removed ChangeEvent since it's never read
+import React, { InputHTMLAttributes } from 'react';
 import { useId } from 'react';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {

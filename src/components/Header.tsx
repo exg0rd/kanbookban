@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
-import src from '../assets/logo.png' //removed import since it's never read
-import { MdInfoOutline } from 'react-icons/md'; //removed MdBookOnline since it's never read
+//import src from '../assets/logo.png'
+import { MdInfoOutline } from 'react-icons/md';
 
 export function Header() {
     return (
