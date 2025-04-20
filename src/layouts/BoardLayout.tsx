@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book } from '../components/Book'; // Import the Book component
+import { Book } from '../components/Book'; 
 import Button from '../components/Button';
 import { Input } from '../components/Input';
 
@@ -24,6 +24,8 @@ export const BoardLayout: React.FC = () => {
   const addBook = () => {
     if (!newBookTitle || !newBookAuthor || !newBookPagesTotal) return;
 
+ 
+
     const newBook = {
       id: Date.now().toString(),
       title: newBookTitle,
@@ -37,6 +39,14 @@ export const BoardLayout: React.FC = () => {
     updateBooks((prevBooks) => [...prevBooks, newBook]);
     resetForm();
     setIsAddingBook(false);
+  };
+
+  const updateBookCover = (id: string, newCoverPath: string) => {
+    updateBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === id ? { ...book, bookCoverPath: newCoverPath } : book
+      )
+    );
   };
 
   const resetForm = () => {
@@ -79,6 +89,7 @@ export const BoardLayout: React.FC = () => {
                   {...book}
                   onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
                   onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
+                  onUpdateBookCover={(id, newCoverPath) => updateBookCover(id, newCoverPath)}
                 />
               </div>
             ))}
@@ -151,6 +162,7 @@ export const BoardLayout: React.FC = () => {
                   {...book}
                   onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
                   onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
+             
                 />
               </div>
             ))}
