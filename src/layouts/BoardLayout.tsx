@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book } from '../components/Book'; // Import the Book component
+import { Book } from '../components/Book'; 
 import Button from '../components/Button';
 import { Input } from '../components/Input';
 
@@ -24,6 +24,8 @@ export const BoardLayout: React.FC = () => {
   const addBook = () => {
     if (!newBookTitle || !newBookAuthor || !newBookPagesTotal) return;
 
+ 
+
     const newBook = {
       id: Date.now().toString(),
       title: newBookTitle,
@@ -37,6 +39,14 @@ export const BoardLayout: React.FC = () => {
     updateBooks((prevBooks) => [...prevBooks, newBook]);
     resetForm();
     setIsAddingBook(false);
+  };
+
+  const updateBookCover = (id: string, newCoverPath: string) => {
+    updateBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === id ? { ...book, bookCoverPath: newCoverPath } : book
+      )
+    );
   };
 
   const resetForm = () => {
@@ -76,11 +86,11 @@ export const BoardLayout: React.FC = () => {
             .map((book: { id: string; }) => (
               <div key={book.id}>
                 <Book
-                title={''} author={''} category={'want-to-read'} pagesTotal={0} pagesRead={0} onDeleteBook={function (_id: string): void {
-                  throw new Error('Function not implemented.');
-                } } {...book}
-                onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
-                onMoveBook={(id, newCategory) => moveBook(id, newCategory)}                />
+                  {...book}
+                  onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
+                  onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
+                  onUpdateBookCover={(id, newCoverPath) => updateBookCover(id, newCoverPath)}
+                />
               </div>
             ))}
           {!isAddingBook && (
@@ -148,12 +158,12 @@ export const BoardLayout: React.FC = () => {
             .filter((book: { category: string; }) => book.category === 'reading')
             .map((book: { id: string; }) => (
               <div key={book.id}>
-                <Book
-                title={''} author={''} category={'want-to-read'} pagesTotal={0} pagesRead={0} onDeleteBook={function (_id: string): void {
-                  throw new Error('Function not implemented.');
-                } } {...book}
-                onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
-                onMoveBook={(id, newCategory) => moveBook(id, newCategory)}                />
+            <Book
+                  {...book}
+                  onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
+                  onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
+             
+                />
               </div>
             ))}
         </div>
