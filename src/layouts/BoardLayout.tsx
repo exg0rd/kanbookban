@@ -1,32 +1,47 @@
 import React, { useState } from 'react';
-import { Book } from '../components/Book'; 
+import { Book } from '../components/Book';
 import Button from '../components/Button';
 import { Input } from '../components/Input';
 
+interface BookType {
+  id: string;
+  title: string;
+  author: string;
+  category: 'want-to-read' | 'reading' | 'read';
+  pagesTotal: number;
+  pagesRead: number;
+  bookCoverPath?: string; 
+}
+
+type SortingOrder = 'ascending' | 'descending';
+
+type UpdatePagesReadFn = (id: string, newPagesRead: number) => void;
+type MoveBookFn = (id: string, newCategory: BookType['category']) => void;
+type DeleteBookFn = (id: string) => void;
+type UpdateBookCoverFn = (id: string, newCoverPath: string) => void;
+
 export const BoardLayout: React.FC = () => {
-  const [books, setBooks] = useState(() => {
+  const [books, setBooks] = useState<BookType[]>(() => {
     const storedBooks = localStorage.getItem("books");
     return storedBooks ? JSON.parse(storedBooks) : [];
   });
 
-  const updateBooks = (updateFn: (prevBooks: typeof books) => typeof books) => {
+  const [isAddingBook, setIsAddingBook] = useState<boolean>(false);
+  const [newBookTitle, setNewBookTitle] = useState<string>('');
+  const [newBookAuthor, setNewBookAuthor] = useState<string>('');
+  const [newBookPagesTotal, setNewBookPagesTotal] = useState<string>('');
+  const [sortingOrder, setSortingOrder] = useState<SortingOrder>('descending');
+
+  const updateBooks = (updateFn: (prevBooks: BookType[]) => BookType[]): void => {
     const result = updateFn(books);
-    console.log(result);
     localStorage.setItem("books", JSON.stringify(result));
     setBooks(result);
-};
+  };
 
-  const [isAddingBook, setIsAddingBook] = useState(false);
-  const [newBookTitle, setNewBookTitle] = useState('');
-  const [newBookAuthor, setNewBookAuthor] = useState('');
-  const [newBookPagesTotal, setNewBookPagesTotal] = useState('');
-
-  const addBook = () => {
+  const addBook = (): void => {
     if (!newBookTitle || !newBookAuthor || !newBookPagesTotal) return;
 
- 
-
-    const newBook = {
+    const newBook: BookType = {
       id: Date.now().toString(),
       title: newBookTitle,
       author: newBookAuthor,
@@ -35,61 +50,95 @@ export const BoardLayout: React.FC = () => {
       pagesRead: 0,
     };
 
-    console.log(newBook)
-    updateBooks((prevBooks) => [...prevBooks, newBook]);
+    updateBooks((prevBooks: BookType[]) => [...prevBooks, newBook]);
     resetForm();
     setIsAddingBook(false);
   };
 
-  const updateBookCover = (id: string, newCoverPath: string) => {
-    updateBooks((prevBooks) =>
-      prevBooks.map((book) =>
+  const updateBookCover: UpdateBookCoverFn = (id: string, newCoverPath: string): void => {
+    updateBooks((prevBooks: BookType[]) =>
+      prevBooks.map((book: BookType) =>
         book.id === id ? { ...book, bookCoverPath: newCoverPath } : book
       )
     );
   };
 
-  const resetForm = () => {
+  const resetForm = (): void => {
     setNewBookTitle('');
     setNewBookAuthor('');
     setNewBookPagesTotal('');
   };
 
-  const moveBook = (id: string, newCategory: 'want-to-read' | 'reading' | 'read') => {
-    updateBooks((prevBooks) =>
-      prevBooks.map((book: { id: string; }) =>
+  const moveBook: MoveBookFn = (id: string, newCategory: BookType['category']): void => {
+    updateBooks((prevBooks: BookType[]) =>
+      prevBooks.map((book: BookType) =>
         book.id === id ? { ...book, category: newCategory } : book
       )
     );
   };
 
-  const updatePagesRead = (id: string, newPagesRead: number) => {
-    updateBooks((prevBooks) =>
-      prevBooks.map((book: { id: string; }) =>
+  const updatePagesRead: UpdatePagesReadFn = (id: string, newPagesRead: number): void => {
+    updateBooks((prevBooks: BookType[]) =>
+      prevBooks.map((book: BookType) =>
         book.id === id ? { ...book, pagesRead: newPagesRead } : book
       )
     );
   };
 
-  const deleteBook = (id: string) => {
-    updateBooks((prevBooks) => prevBooks.filter((book: { id: string; }) => book.id !== id));
+  const deleteBook: DeleteBookFn = (id: string): void => {
+    updateBooks((prevBooks: BookType[]) =>
+      prevBooks.filter((book: BookType) => book.id !== id)
+    );
+  };
+
+  const sortBooksByPercentage = (): void => {
+    updateBooks((prevBooks: BookType[]) => {
+      const booksWithPercentage = prevBooks.map((book: BookType) => {
+        if (book.category === 'reading') {
+          const percentageRead = (book.pagesRead / book.pagesTotal) * 100 || 0;
+          return { ...book, percentageRead };
+        }
+        return book;
+      });
+
+      const sortedBooks = booksWithPercentage.sort((a: any, b: any) => {
+        if (a.category === 'reading' && b.category === 'reading') {
+          return sortingOrder === 'ascending'
+            ? (a.percentageRead || 0) - (b.percentageRead || 0) 
+            : (b.percentageRead || 0) - (a.percentageRead || 0); 
+        }
+        return 0;
+      });
+
+      setSortingOrder((prevOrder: SortingOrder) => (prevOrder === 'ascending' ? 'descending' : 'ascending'));
+
+      return sortedBooks.map((book: any) => {
+        if (book.category === 'reading') {
+          const { percentageRead, ...rest } = book;
+          return rest;
+        }
+        return book;
+      });
+    });
   };
 
   return (
     <div className="flex flex-col w-full max-w-[1920px] gap-6 bg-white shadow-md p-6 rounded-lg">
       <h1 className="text-3xl font-bold text-center text-gray-800">Ваши книги</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* "Want to Read" Section */}
         <div className="flex flex-col gap-4 p-4 bg-red-50 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-red-700">Хочу прочитать</h2>
           {books
-            .filter((book: { category: string; }) => book.category === 'want-to-read')
-            .map((book: { id: string; }) => (
+            .filter((book: BookType) => book.category === 'want-to-read')
+            .map((book: BookType) => (
               <div key={book.id}>
                 <Book
                   {...book}
-                  onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
-                  onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
-                  onUpdateBookCover={(id, newCoverPath) => updateBookCover(id, newCoverPath)}
+                  onUpdatePagesRead={updatePagesRead}
+                  onMoveBook={moveBook}
+                  onDeleteBook={deleteBook}
+                  onUpdateBookCover={updateBookCover}
                 />
               </div>
             ))}
@@ -152,33 +201,45 @@ export const BoardLayout: React.FC = () => {
           )}
         </div>
 
+        {/* "Reading" Section */}
         <div className="flex flex-col gap-4 p-4 bg-yellow-50 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-yellow-700">Читаю</h2>
           {books
-            .filter((book: { category: string; }) => book.category === 'reading')
-            .map((book: { id: string; }) => (
+            .filter((book: BookType) => book.category === 'reading')
+            .map((book: BookType) => (
               <div key={book.id}>
             <Book
                   {...book}
-                  onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
-                  onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
-             
+                  onUpdatePagesRead={updatePagesRead}
+                  onMoveBook={moveBook}
+                  onDeleteBook={deleteBook}
+                  onUpdateBookCover={updateBookCover}
                 />
               </div>
             ))}
+          <Button
+            variant="default"
+            label={`Сортировка по % (${sortingOrder === 'ascending' ? 'Возрастанию' : 'Убыванию'})`}
+            type="button"
+            onClick={sortBooksByPercentage}
+            className="self-center"
+          />
         </div>
 
+        {/* "Read" Section */}
         <div className="flex flex-col gap-4 p-4 bg-green-50 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-green-700">Прочитал</h2>
           {books
-            .filter((book: { category: string; }) => book.category === 'read')
-            .map((book: { id: string; }) => (
+            .filter((book: BookType) => book.category === 'read')
+            .map((book: BookType) => (
               <div key={book.id}>
                 <Book
-                title={''} author={''} category={'want-to-read'} pagesTotal={0} pagesRead={0} {...book}
-                onUpdatePagesRead={(id, newPagesRead) => updatePagesRead(id, newPagesRead)}
-                onMoveBook={(id, newCategory) => moveBook(id, newCategory)}
-                onDeleteBook={(id) => deleteBook(id)}                />
+                  {...book}
+                  onUpdatePagesRead={updatePagesRead}
+                  onMoveBook={moveBook}
+                  onDeleteBook={deleteBook}
+                  onUpdateBookCover={updateBookCover}
+                />
               </div>
             ))}
         </div>
