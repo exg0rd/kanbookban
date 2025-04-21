@@ -18,6 +18,7 @@ import { IoMdReturnLeft } from 'react-icons/io';
     onDeleteBook: (id: string) => void;
     onUpdateBookCover: (id: string, newCoverPath: string) => void;
   }
+
   
   export const Book: React.FC<Props> = ({
     id,
@@ -34,6 +35,7 @@ import { IoMdReturnLeft } from 'react-icons/io';
   }) => {
     const [recentPages, setRecentPages] = useState<number>(0);
     const [isEdit, setIsEdit] = useState<boolean>(false); 
+
   
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
       const value = e.target.value;
